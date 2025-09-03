@@ -29,3 +29,25 @@ flutter run -d chrome
 ```sh
 flutter devices
 ```
+
+### 3. Running the Development Server (for Web)
+
+If you are developing for the web and need to save data as physical JSON files (mimicking the I/O behavior), you need to run a local development server.
+
+1.  **Start the server:**
+    Open a new terminal and navigate to the `server` directory within your project:
+    ```bash
+    cd server
+    ```
+    Then, run the Dart server:
+    ```bash
+    dart main.dart
+    ```
+    This server will listen on `http://127.0.0.1:8080` and save JSON files to a `dashboard_data` directory within the `server` directory.
+
+2.  **Run your Flutter web application:**
+    In a separate terminal, run your Flutter web application as usual:
+    ```bash
+    flutter run -d chrome
+    ```
+    Your web application will now send data to the local server for file saving.
