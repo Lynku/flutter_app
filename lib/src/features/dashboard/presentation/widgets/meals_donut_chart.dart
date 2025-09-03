@@ -16,7 +16,7 @@ class MealsDonutChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasData = mealCalories.values.any((v) => v > 0);
     return SizedBox(
-      height: 200,
+      height: 300,
       child: hasData
           ? PieChart(
               PieChartData(

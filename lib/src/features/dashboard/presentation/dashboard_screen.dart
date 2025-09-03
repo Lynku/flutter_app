@@ -4,6 +4,8 @@ import 'package:flutter_app/src/features/dashboard/presentation/widgets/calorie_
 import 'package:flutter_app/src/features/dashboard/presentation/widgets/meals_donut_chart.dart';
 import 'package:flutter_app/src/features/dashboard/presentation/widgets/water_tracker_card.dart';
 import 'package:flutter_app/src/core/data/data_saver.dart';
+import 'package:flutter_app/src/features/dashboard/presentation/widgets/burned_activities_list.dart';
+import 'package:flutter_app/src/features/dashboard/presentation/widgets/meal_list.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -62,11 +64,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (loadedData != null) {
         _waterGlasses = loadedData['waterGlasses'] ?? 0;
         _burnedActivities.clear();
-        (loadedData['burnedActivities'] as Map<dynamic, dynamic>).forEach((key, value) {
+        (loadedData['burnedActivities'] as Map<dynamic, dynamic>).forEach((
+          key,
+          value,
+        ) {
           _burnedActivities[key.toString()] = value.toDouble();
         });
         _mealCalories.clear();
-        (loadedData['mealCalories'] as Map<dynamic, dynamic>).forEach((key, value) {
+        (loadedData['mealCalories'] as Map<dynamic, dynamic>).forEach((
+          key,
+          value,
+        ) {
           _mealCalories[key.toString()] = value.toDouble();
         });
       } else {
@@ -127,11 +135,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _showAddBurnedDialog({String? activityToEdit, double? caloriesToEdit}) {
     final activityController = TextEditingController(text: activityToEdit);
-    final calorieController = TextEditingController(text: caloriesToEdit?.toStringAsFixed(0));
+    final calorieController = TextEditingController(
+      text: caloriesToEdit?.toStringAsFixed(0),
+    );
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(activityToEdit == null ? 'Add Burned Calories' : 'Edit Burned Calories'),
+        title: Text(
+          activityToEdit == null
+              ? 'Add Burned Calories'
+              : 'Edit Burned Calories',
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -153,7 +167,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
-          if (activityToEdit != null) // Show delete button only for existing activities
+          if (activityToEdit !=
+              null) // Show delete button only for existing activities
             TextButton(
               onPressed: () async {
                 setState(() {
@@ -188,20 +203,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showAddMealDialog({String? mealToEdit, double? caloriesToEdit}) {
-    final calorieController = TextEditingController(text: caloriesToEdit?.toStringAsFixed(0));
+    final calorieController = TextEditingController(
+      text: caloriesToEdit?.toStringAsFixed(0),
+    );
     final newMealController = TextEditingController();
     String? selectedMeal = mealToEdit ?? _mealCalories.keys.first;
-    bool isNewMeal = mealToEdit == null ? false : !_mealCalories.containsKey(mealToEdit);
+    bool isNewMeal = mealToEdit == null
+        ? false
+        : !_mealCalories.containsKey(mealToEdit);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(mealToEdit == null ? 'Add Meal Calories' : 'Edit Meal Calories'),
+        title: Text(
+          mealToEdit == null ? 'Add Meal Calories' : 'Edit Meal Calories',
+        ),
         content: StatefulBuilder(
           builder: (context, setDialogState) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (!isNewMeal && mealToEdit == null) // Only show dropdown for adding existing meals
+              if (!isNewMeal &&
+                  mealToEdit ==
+                      null) // Only show dropdown for adding existing meals
                 DropdownButton<String>(
                   value: selectedMeal,
                   items: _mealCalories.keys
@@ -213,17 +236,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onChanged: (value) =>
                       setDialogState(() => selectedMeal = value),
                 ),
-              if (isNewMeal || mealToEdit != null) // Show text field for new meal or editing existing
+              if (isNewMeal ||
+                  mealToEdit !=
+                      null) // Show text field for new meal or editing existing
                 TextField(
                   controller: newMealController..text = mealToEdit ?? '',
                   decoration: const InputDecoration(labelText: 'Meal Name'),
-                  enabled: mealToEdit == null, // Disable editing meal name for existing meals
+                  enabled:
+                      mealToEdit ==
+                      null, // Disable editing meal name for existing meals
                 ),
               if (mealToEdit == null) // Only show checkbox for adding new meal
                 CheckboxListTile(
                   title: const Text('Add new meal type'),
                   value: isNewMeal,
-                  onChanged: (value) => setDialogState(() => isNewMeal = value!),
+                  onChanged: (value) =>
+                      setDialogState(() => isNewMeal = value!),
                 ),
               TextField(
                 controller: calorieController,
@@ -266,7 +294,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             _availableColors.length];
                   }
                 } else if (selectedMeal != null) {
-                  _mealCalories[selectedMeal!] = calories; // Set directly for editing
+                  _mealCalories[selectedMeal!] =
+                      calories; // Set directly for editing
                 }
               });
               await _saveDailyData();
@@ -285,7 +314,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: TextButton.icon(
-          icon: const Icon(Icons.calendar_today, color: Color.fromARGB(255, 0, 0, 0)),
+          icon: const Icon(
+            Icons.calendar_today,
+            color: Color.fromARGB(255, 0, 0, 0),
+          ),
           label: Text(
             'Dashboard for $formattedDate',
             style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
@@ -298,6 +330,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              ActionButtons(
+                onAddMeal: () =>
+                    _showAddMealDialog(), // Call without arguments for adding
+                onAddBurned: () =>
+                    _showAddBurnedDialog(), // Call without arguments for adding
+              ),
+              const SizedBox(height: 20),
               CalorieSummaryCard(
                 totalCaloriesConsumed: _totalCaloriesConsumed,
                 caloriesBurned: _totalCaloriesBurned,
@@ -309,17 +348,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mealColors: _mealColors,
               ),
               const SizedBox(height: 20),
-              _buildBurnedActivitiesList(),
-              const SizedBox(height: 20),
               WaterTrackerCard(
                 waterGlasses: _waterGlasses,
                 onAddWater: _addWater,
                 onSubtractWater: _subtractWater,
               ),
               const SizedBox(height: 20),
-              ActionButtons(
-                onAddMeal: () => _showAddMealDialog(), // Call without arguments for adding
-                onAddBurned: () => _showAddBurnedDialog(), // Call without arguments for adding
+              MealList(
+                mealCalories: _mealCalories,
+                onEditMeal: _showAddMealDialog,
+              ),
+              const SizedBox(height: 20),
+              BurnedActivitiesList(
+                burnedActivities: _burnedActivities,
+                onEditBurned: _showAddBurnedDialog,
               ),
             ],
           ),
@@ -327,89 +369,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
-  Widget _buildBurnedActivitiesList() {
-    if (_burnedActivities.isEmpty) return const SizedBox.shrink();
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Burned Activities',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            ..._burnedActivities.entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(entry.key),
-                    Row(
-                      children: [
-                        Text('${entry.value.toStringAsFixed(0)} kcal'),
-                        IconButton(
-                          icon: const Icon(Icons.edit, size: 18),
-                          onPressed: () => _showAddBurnedDialog(
-                            activityToEdit: entry.key,
-                            caloriesToEdit: entry.value,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMealList() {
-    if (_mealCalories.isEmpty) return const SizedBox.shrink();
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Meal Calories',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            ..._mealCalories.entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(entry.key),
-                    Row(
-                      children: [
-                        Text('${entry.value.toStringAsFixed(0)} kcal'),
-                        IconButton(
-                          icon: const Icon(Icons.edit, size: 18),
-                          onPressed: () => _showAddMealDialog(
-                            mealToEdit: entry.key,
-                            caloriesToEdit: entry.value,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
 }

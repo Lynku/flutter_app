@@ -16,8 +16,32 @@ class ActionButtons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ElevatedButton(onPressed: onAddMeal, child: const Text('Add Meal Calories')),
-        ElevatedButton(onPressed: onAddBurned, child: const Text('Add Burned')),
+        SizedBox(
+          width: 150,
+          height: 55,
+          child: ElevatedButton(
+            onPressed: onAddMeal,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Text('Add Meal'),
+          ),
+        ),
+        SizedBox(
+          width: 150,
+          height: 55,
+          child: ElevatedButton(
+            onPressed: onAddBurned,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Text('Add Burned'),
+          ),
+        ),
       ],
     );
   }
