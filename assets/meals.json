@@ -1,0 +1,177 @@
+[
+  {
+    "id": "m1",
+    "title": "Spaghetti with Tomato Sauce",
+    "imageUrl": "https://picsum.photos/id/1080/600/400",
+    "calories": 450,
+    "vitamins": "A, C, K",
+    "proteins": "15g",
+    "items": [
+      "Spaghetti",
+      "Tomatoes",
+      "Onion",
+      "Garlic",
+      "Olive Oil",
+      "Basil"
+    ],
+    "preparation": "Boil spaghetti according to package instructions. In a separate pan, sauté chopped onion and minced garlic in olive oil until fragrant. Add crushed tomatoes, basil, salt, and pepper. Simmer for 20 minutes. Drain spaghetti and mix with the sauce. Serve hot."
+  },
+  {
+    "id": "m2",
+    "title": "Grilled Chicken Salad",
+    "imageUrl": "https://picsum.photos/id/1081/600/400",
+    "calories": 320,
+    "vitamins": "C, E, B6",
+    "proteins": "30g",
+    "items": [
+      "Chicken breast",
+      "Mixed greens",
+      "Cherry tomatoes",
+      "Cucumber",
+      "Red onion",
+      "Olive oil",
+      "Lemon juice"
+    ],
+    "preparation": "Grill chicken breast until cooked through, then slice. In a large bowl, combine mixed greens, halved cherry tomatoes, sliced cucumber, and thinly sliced red onion. Top with grilled chicken. Dress with a mixture of olive oil and lemon juice."
+  },
+  {
+    "id": "m3",
+    "title": "Vegetable Curry with Rice",
+    "imageUrl": "https://picsum.photos/id/1082/600/400",
+    "calories": 480,
+    "vitamins": "A, K, B1",
+    "proteins": "12g",
+    "items": [
+      "Mixed vegetables (broccoli, carrots, bell peppers)",
+      "Coconut milk",
+      "Curry paste",
+      "Onion",
+      "Garlic",
+      "Ginger",
+      "Rice"
+    ],
+    "preparation": "Sauté chopped onion, garlic, and ginger. Add curry paste and cook for a minute. Stir in mixed vegetables and coconut milk. Simmer until vegetables are tender. Serve hot with steamed rice."
+  },
+  {
+    "id": "m4",
+    "title": "Beef Stir-fry with Noodles",
+    "imageUrl": "https://picsum.photos/id/1083/600/400",
+    "calories": 550,
+    "vitamins": "B12, Zinc, Iron",
+    "proteins": "35g",
+    "items": [
+      "Beef sirloin",
+      "Egg noodles",
+      "Soy sauce",
+      "Sesame oil",
+      "Broccoli",
+      "Mushrooms",
+      "Carrots"
+    ],
+    "preparation": "Slice beef thinly and stir-fry until browned. Add vegetables and cook until tender-crisp. In a separate bowl, mix soy sauce and sesame oil. Cook noodles according to package. Combine beef, vegetables, sauce, and noodles."
+  },
+  {
+    "id": "m5",
+    "title": "Lentil Soup",
+    "imageUrl": "https://picsum.photos/id/1084/600/400",
+    "calories": 280,
+    "vitamins": "B9, Iron, Potassium",
+    "proteins": "18g",
+    "items": [
+      "Lentils",
+      "Carrots",
+      "Celery",
+      "Onion",
+      "Vegetable broth",
+      "Cumin",
+      "Coriander"
+    ],
+    "preparation": "Sauté chopped carrots, celery, and onion. Add lentils, vegetable broth, cumin, and coriander. Bring to a boil, then reduce heat and simmer until lentils are tender. Season to taste."
+  },
+  {
+    "id": "m6",
+    "title": "Fish Tacos",
+    "imageUrl": "https://picsum.photos/id/1085/600/400",
+    "calories": 380,
+    "vitamins": "D, B12",
+    "proteins": "28g",
+    "items": [
+      "White fish fillets",
+      "Corn tortillas",
+      "Cabbage slaw",
+      "Avocado",
+      "Lime",
+      "Cilantro"
+    ],
+    "preparation": "Season and pan-fry fish until flaky. Warm tortillas. Assemble tacos with fish, cabbage slaw, sliced avocado, a squeeze of lime, and fresh cilantro."
+  },
+  {
+    "id": "m7",
+    "title": "Quinoa Salad with Roasted Vegetables",
+    "imageUrl": "https://picsum.photos/id/1086/600/400",
+    "calories": 350,
+    "vitamins": "A, C, Magnesium",
+    "proteins": "14g",
+    "items": [
+      "Quinoa",
+      "Bell peppers",
+      "Zucchini",
+      "Red onion",
+      "Feta cheese",
+      "Olive oil",
+      "Balsamic vinegar"
+    ],
+    "preparation": "Cook quinoa. Roast chopped bell peppers, zucchini, and red onion with olive oil. Combine cooked quinoa, roasted vegetables, and crumbled feta cheese. Dress with balsamic vinegar."
+  },
+  {
+    "id": "m8",
+    "title": "Breakfast Burrito",
+    "imageUrl": "https://picsum.photos/id/1087/600/400",
+    "calories": 420,
+    "vitamins": "B, D",
+    "proteins": "20g",
+    "items": [
+      "Tortilla",
+      "Eggs",
+      "Black beans",
+      "Salsa",
+      "Cheese",
+      "Avocado"
+    ],
+    "preparation": "Scramble eggs. Warm tortilla. Fill tortilla with scrambled eggs, black beans, salsa, cheese, and sliced avocado. Roll up and serve."
+  },
+  {
+    "id": "m9",
+    "title": "Shrimp Scampi with Linguine",
+    "imageUrl": "https://picsum.photos/id/1088/600/400",
+    "calories": 500,
+    "vitamins": "B3, B12, Selenium",
+    "proteins": "30g",
+    "items": [
+      "Shrimp",
+      "Linguine",
+      "Garlic",
+      "Butter",
+      "White wine",
+      "Red pepper flakes",
+      "Parsley"
+    ],
+    "preparation": "Cook linguine. Sauté garlic in butter. Add shrimp and cook until pink. Deglaze with white wine, add red pepper flakes and parsley. Toss with linguine."
+  },
+  {
+    "id": "m10",
+    "title": "Caprese Salad",
+    "imageUrl": "https://picsum.photos/id/1089/600/400",
+    "calories": 250,
+    "vitamins": "C, K",
+    "proteins": "10g",
+    "items": [
+      "Fresh mozzarella",
+      "Tomatoes",
+      "Fresh basil",
+      "Balsamic glaze",
+      "Olive oil"
+    ],
+    "preparation": "Slice mozzarella and tomatoes. Arrange on a plate with fresh basil leaves. Drizzle with olive oil and balsamic glaze."
+  }
+]
