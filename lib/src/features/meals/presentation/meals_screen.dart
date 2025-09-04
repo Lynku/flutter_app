@@ -78,7 +78,7 @@ class _MealsScreenState extends State<MealsScreen> with SingleTickerProviderStat
     }
   }
 
-  Future<void> _addMealToDashboard(String mealName, double calories) async {
+  Future<void> _addMealToDashboard(Meal meal) async {
     try {
       final dataSaver = DataSaver();
       final selectedDate = DateTime.now();
@@ -95,14 +95,14 @@ class _MealsScreenState extends State<MealsScreen> with SingleTickerProviderStat
 
       final mealCalories = (dailyData['mealCalories'] as Map).cast<String, double>();
 
-      mealCalories[mealName] = calories;
+      mealCalories[meal.title] = meal.calories.toDouble();
       dailyData['mealCalories'] = mealCalories;
 
       await dataSaver.saveDailyData(formattedDate, dailyData);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$mealName added to today\'s meals'),
+          content: Text('${meal.title} added to today\'s meals'),
         ),
       );
     } catch (e) {
@@ -144,7 +144,14 @@ class _MealsScreenState extends State<MealsScreen> with SingleTickerProviderStat
           ),
           // Custom Meal Tab
           CustomMealTab(
-            onSaveMeal: _addMealToDashboard,
+            onSaveMeal: (Meal meal) {
+              _addMealToDashboard(meal);
+              // Also add the new meal to the list of meals
+              setState(() {
+                _allMeals.insert(0, meal);
+                _displayedMeals.insert(0, meal);
+              });
+            },
             tabController: _tabController,
           ),
         ],

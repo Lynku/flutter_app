@@ -6,7 +6,7 @@ class MealsListTab extends StatelessWidget {
   final bool isLoading;
   final ScrollController scrollController;
   final Function(Meal) showMealDetails;
-  final Function(String, double) addMealToDashboard;
+  final Function(Meal) addMealToDashboard;
 
   const MealsListTab({
     super.key,
@@ -58,7 +58,7 @@ class MealsListTab extends StatelessWidget {
                         ),
                         IconButton(
                           icon: const Icon(Icons.add_circle_outline),
-                          onPressed: () => addMealToDashboard(meal.title, meal.calories.toDouble()),
+                          onPressed: () => addMealToDashboard(meal),
                           tooltip: 'Add to today\'s meals',
                         ),
                       ],
