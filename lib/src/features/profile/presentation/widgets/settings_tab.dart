@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_app/src/core/theme/theme_provider.dart';
+import 'package:flutter_app/src/core/theme/app_theme.dart';
 
-class SettingsTab extends StatefulWidget {
+class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});
 
   @override
-  State<SettingsTab> createState() => _SettingsTabState();
+  ConsumerState<SettingsTab> createState() => _SettingsTabState();
 }
 
-class _SettingsTabState extends State<SettingsTab> {
+class _SettingsTabState extends ConsumerState<SettingsTab> {
   bool _notificationsEnabled = true;
-  String _selectedTheme = 'System'; // Default theme
 
   @override
   void initState() {
@@ -22,7 +24,6 @@ class _SettingsTabState extends State<SettingsTab> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
-      _selectedTheme = prefs.getString('selectedTheme') ?? 'System';
     });
   }
 
@@ -31,15 +32,6 @@ class _SettingsTabState extends State<SettingsTab> {
     await prefs.setBool('notificationsEnabled', value);
     setState(() {
       _notificationsEnabled = value;
-    });
-  }
-
-  Future<void> _saveThemeSetting(String? value) async {
-    if (value == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selectedTheme', value);
-    setState(() {
-      _selectedTheme = value;
     });
   }
 
@@ -69,6 +61,8 @@ class _SettingsTabState extends State<SettingsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final currentThemeMode = ref.watch(themeProvider);
+
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
@@ -79,14 +73,18 @@ class _SettingsTabState extends State<SettingsTab> {
         ),
         ListTile(
           title: const Text('App Theme'),
-          trailing: DropdownButton<String>(
-            value: _selectedTheme,
-            onChanged: _saveThemeSetting,
-            items: <String>['System', 'Light', 'Dark']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
+          trailing: DropdownButton<AppThemeMode>(
+            value: currentThemeMode,
+            onChanged: (AppThemeMode? newMode) {
+              if (newMode != null) {
+                ref.read(themeProvider.notifier).setTheme(newMode);
+              }
+            },
+            items: AppThemeMode.values
+                .map<DropdownMenuItem<AppThemeMode>>((AppThemeMode mode) {
+              return DropdownMenuItem<AppThemeMode>(
+                value: mode,
+                child: Text(mode.toDisplayString()),
               );
             }).toList(),
           ),

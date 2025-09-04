@@ -25,19 +25,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'Dinner': 0,
   };
 
-  final Map<String, Color> _mealColors = {
-    'Breakfast': Colors.blue,
-    'Lunch': Colors.green,
-    'Dinner': Colors.orange,
-  };
-  final List<Color> _availableColors = [
-    Colors.purple,
-    Colors.red,
-    Colors.teal,
-    Colors.pink,
-    Colors.amber,
-  ];
-
   late DataSaver _dataSaver;
 
   @override
@@ -177,7 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 await _saveDailyData();
                 Navigator.of(context).pop();
               },
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ),
           ElevatedButton(
             onPressed: () async {
@@ -271,12 +258,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onPressed: () async {
                 setState(() {
                   _mealCalories.remove(mealToEdit);
-                  _mealColors.remove(mealToEdit);
                 });
                 await _saveDailyData();
                 Navigator.of(context).pop();
               },
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ),
           ElevatedButton(
             onPressed: () async {
@@ -289,9 +275,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   if (newMealName.isNotEmpty &&
                       !_mealCalories.containsKey(newMealName)) {
                     _mealCalories[newMealName] = calories;
-                    _mealColors[newMealName] =
-                        _availableColors[_mealCalories.length %
-                            _availableColors.length];
                   }
                 } else if (selectedMeal != null) {
                   _mealCalories[selectedMeal!] =
@@ -299,6 +282,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 }
               });
               await _saveDailyData();
+              Navigator.of(context).pop();
             },
             child: Text(mealToEdit == null ? 'Add' : 'Save'),
           ),
@@ -311,16 +295,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final formattedDate =
         "${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}";
+    
+    final Map<String, Color> mealColors = {
+      'Breakfast': Theme.of(context).primaryColor,
+      'Lunch': Theme.of(context).colorScheme.secondary,
+      'Dinner': Colors.orange,
+    };
+
     return Scaffold(
       appBar: AppBar(
         title: TextButton.icon(
-          icon: const Icon(
+          icon: Icon(
             Icons.calendar_today,
-            color: Color.fromARGB(255, 0, 0, 0),
+            color: Theme.of(context).appBarTheme.foregroundColor,
           ),
           label: Text(
             'Dashboard for $formattedDate',
-            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+            style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor),
           ),
           onPressed: () => _selectDate(context),
         ),
@@ -345,7 +336,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 20),
               MealsDonutChart(
                 mealCalories: _mealCalories,
-                mealColors: _mealColors,
+                mealColors: mealColors,
               ),
               const SizedBox(height: 20),
               WaterTrackerCard(
