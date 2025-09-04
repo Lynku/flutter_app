@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_app/src/core/data/data_saver.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -61,10 +62,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
     try {
       //     .get(Uri.parse('http://localhost:8080/products/$barcode'));
       final response = await http
-             .get(Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json'));
+          .get(Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json'));
       if (response.statusCode == 200) {
-        final product = json.decode(response.body);
-        await _saveProduct(product);
+        final data = json.decode(response.body);
+        if (data['status'] == 1 && data['product'] != null) {
+          final product = data['product'];
+          final nutriments = product['nutriments'];
+          final newProduct = {
+            'name': product['product_name'],
+            'barcode': barcode,
+            'energy_kcal_100g': nutriments['energy-kcal_100g'],
+            'nutriments': nutriments,
+          };
+          await _saveProduct(newProduct);
+        }
       }
     } catch (e) {
       // Handle errors
@@ -81,17 +92,29 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   Future<void> _addToMeal(Map<String, dynamic> product) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final mealsFile = File('${directory.path}/meals.json');
-      List<Map<String, dynamic>> meals = [];
-      if (await mealsFile.exists()) {
-        final content = await mealsFile.readAsString();
-        if (content.isNotEmpty) {
-          meals = List<Map<String, dynamic>>.from(json.decode(content));
-        }
-      }
-      meals.add(product);
-      await mealsFile.writeAsString(json.encode(meals));
+      final dataSaver = DataSaver();
+      final selectedDate = DateTime.now();
+      final formattedDate =
+          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+
+      final dailyData = await dataSaver.readDailyData(formattedDate) ??
+          {
+            'date': formattedDate,
+            'waterGlasses': 0,
+            'burnedActivities': <String, double>{},
+            'mealCalories': <String, double>{},
+          };
+
+      final mealCalories = (dailyData['mealCalories'] as Map).cast<String, double>();
+      final productName = product['name'] as String;
+      final calories = (product['nutriments']['energy-kcal_serving'] ??
+          product['energy_kcal_100g']) as num;
+
+      mealCalories[productName] = calories.toDouble();
+      dailyData['mealCalories'] = mealCalories;
+
+      await dataSaver.saveDailyData(formattedDate, dailyData);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${product['name']} added to today\'s meals'),
@@ -129,9 +152,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
               itemCount: _scannedProducts.length,
               itemBuilder: (context, index) {
                 final product = _scannedProducts[index];
+                final energy = product['energy_kcal_100g'];
                 return ListTile(
                   title: Text(product['name'] ?? 'No name'),
-                  subtitle: Text(product['barcode'] ?? ''),
+                  subtitle: Text('Barcode: ${product['barcode'] ?? ''} - ${energy ?? 'N/A'} kcal'),
                   trailing: IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () => _addToMeal(product),

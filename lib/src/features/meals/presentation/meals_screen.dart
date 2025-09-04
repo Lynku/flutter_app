@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/src/core/data/data_saver.dart';
 import 'package:flutter_app/src/features/meals/data/meal_service.dart';
 import 'package:flutter_app/src/features/meals/domain/meal.dart';
+import 'package:flutter_app/src/features/meals/presentation/widgets/custom_meal_tab.dart';
+import 'package:flutter_app/src/features/meals/presentation/widgets/meal_detail_screen.dart';
+import 'package:flutter_app/src/features/meals/presentation/widgets/meals_list_tab.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key});
@@ -9,7 +13,8 @@ class MealsScreen extends StatefulWidget {
   State<MealsScreen> createState() => _MealsScreenState();
 }
 
-class _MealsScreenState extends State<MealsScreen> {
+class _MealsScreenState extends State<MealsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final MealService _mealService = MealService();
   List<Meal> _allMeals = [];
   List<Meal> _displayedMeals = [];
@@ -21,12 +26,16 @@ class _MealsScreenState extends State<MealsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadAllMeals();
+    _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAllMeals();
+    });
     _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
@@ -69,6 +78,38 @@ class _MealsScreenState extends State<MealsScreen> {
     }
   }
 
+  Future<void> _addMealToDashboard(String mealName, double calories) async {
+    try {
+      final dataSaver = DataSaver();
+      final selectedDate = DateTime.now();
+      final formattedDate =
+          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+
+      final dailyData = await dataSaver.readDailyData(formattedDate) ??
+          {
+            'date': formattedDate,
+            'waterGlasses': 0,
+            'burnedActivities': <String, double>{},
+            'mealCalories': <String, double>{},
+          };
+
+      final mealCalories = (dailyData['mealCalories'] as Map).cast<String, double>();
+
+      mealCalories[mealName] = calories;
+      dailyData['mealCalories'] = mealCalories;
+
+      await dataSaver.saveDailyData(formattedDate, dailyData);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$mealName added to today\'s meals'),
+        ),
+      );
+    } catch (e) {
+      // Handle errors
+    }
+  }
+
   void _showMealDetails(Meal meal) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -82,95 +123,31 @@ class _MealsScreenState extends State<MealsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meals'),
-      ),
-      body: _isLoading && _displayedMeals.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              controller: _scrollController,
-              itemCount: _displayedMeals.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == _displayedMeals.length) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final meal = _displayedMeals[index];
-                return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: InkWell(
-                    onTap: () => _showMealDetails(meal),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Image.network(
-                            meal.imageUrl,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  meal.title,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                ),
-                                Text('Calories: ${meal.calories} kcal'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-    );
-  }
-}
-
-class MealDetailScreen extends StatelessWidget {
-  final Meal meal;
-
-  const MealDetailScreen({super.key, required this.meal});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(meal.title),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.network(meal.imageUrl, fit: BoxFit.cover, width: double.infinity, height: 200),
-            const SizedBox(height: 16),
-            Text(
-              'Calories: ${meal.calories} kcal',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Vitamins: ${meal.vitamins}'),
-            const SizedBox(height: 8),
-            Text('Proteins: ${meal.proteins}'),
-            const SizedBox(height: 16),
-            const Text(
-              'Ingredients:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            ...meal.items.map((item) => Text('- $item')),
-            const SizedBox(height: 16),
-            const Text(
-              'Preparation:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(meal.preparation),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Meals'),
+            Tab(text: 'Add Custom Meal'),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Meals Tab
+          MealsListTab(
+            displayedMeals: _displayedMeals,
+            isLoading: _isLoading,
+            scrollController: _scrollController,
+            showMealDetails: _showMealDetails,
+            addMealToDashboard: _addMealToDashboard,
+          ),
+          // Custom Meal Tab
+          CustomMealTab(
+            onSaveMeal: _addMealToDashboard,
+            tabController: _tabController,
+          ),
+        ],
       ),
     );
   }
