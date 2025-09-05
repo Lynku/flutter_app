@@ -6,7 +6,6 @@ import 'package:flutter_app/src/features/dashboard/presentation/widgets/water_tr
 import 'package:flutter_app/src/core/data/data_saver.dart';
 import 'package:flutter_app/src/features/dashboard/presentation/widgets/burned_activities_list.dart';
 import 'package:flutter_app/src/features/dashboard/presentation/widgets/meal_list.dart';
-import 'package:flutter_app/src/core/theme/chart_colors_extension.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
