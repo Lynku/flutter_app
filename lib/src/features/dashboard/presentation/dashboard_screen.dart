@@ -6,6 +6,7 @@ import 'package:flutter_app/src/features/dashboard/presentation/widgets/water_tr
 import 'package:flutter_app/src/core/data/data_saver.dart';
 import 'package:flutter_app/src/features/dashboard/presentation/widgets/burned_activities_list.dart';
 import 'package:flutter_app/src/features/dashboard/presentation/widgets/meal_list.dart';
+import 'package:flutter_app/src/core/theme/chart_colors_extension.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,11 +20,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _selectedDate = DateTime.now();
   int _waterGlasses = 0;
   final Map<String, double> _burnedActivities = {};
-  final Map<String, double> _mealCalories = {
-    'Breakfast': 0,
-    'Lunch': 0,
-    'Dinner': 0,
-  };
+  final Map<String, double> _mealCalories = {};
 
   late DataSaver _dataSaver;
 
@@ -68,7 +65,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // If no data for today, clear current state
         _waterGlasses = 0;
         _burnedActivities.clear();
-        _mealCalories.updateAll((key, value) => 0);
+        _mealCalories.clear();
+        _mealCalories.addAll({'Breakfast': 0.0, 'Lunch': 0.0, 'Dinner': 0.0});
       }
     });
   }
@@ -164,7 +162,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 await _saveDailyData();
                 Navigator.of(context).pop();
               },
-              child: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ),
           ElevatedButton(
             onPressed: () async {
@@ -262,7 +263,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 await _saveDailyData();
                 Navigator.of(context).pop();
               },
-              child: Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ),
           ElevatedButton(
             onPressed: () async {
@@ -295,12 +299,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final formattedDate =
         "${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}";
-    
-    final Map<String, Color> mealColors = {
-      'Breakfast': Theme.of(context).primaryColor,
-      'Lunch': Theme.of(context).colorScheme.secondary,
-      'Dinner': Colors.orange,
-    };
+
+    final List<Color> chartColors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.purple,
+      Colors.orange,
+      Colors.teal,
+      Colors.pink,
+      Colors.indigo,
+      Colors.amber,
+      Colors.cyan,
+    ];
+
+    final Map<String, Color> mealColors = {};
+    for (int i = 0; i < _mealCalories.keys.length; i++) {
+      final colorIndex = i < chartColors.length ? i : chartColors.length - 1;
+      mealColors[_mealCalories.keys.elementAt(i)] = chartColors[colorIndex];
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -311,7 +328,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           label: Text(
             'Dashboard for $formattedDate',
-            style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor),
+            style: TextStyle(
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
           ),
           onPressed: () => _selectDate(context),
         ),

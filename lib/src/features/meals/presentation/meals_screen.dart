@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/src/core/data/data_saver.dart';
+import 'package:flutter_app/src/features/dashboard/data/dashboard_service.dart';
 import 'package:flutter_app/src/features/meals/data/meal_service.dart';
 import 'package:flutter_app/src/features/meals/domain/meal.dart';
 import 'package:flutter_app/src/features/meals/presentation/widgets/custom_meal_tab.dart';
@@ -16,9 +16,10 @@ class MealsScreen extends StatefulWidget {
 class _MealsScreenState extends State<MealsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final MealService _mealService = MealService();
+  final DashboardService _dashboardService = DashboardService();
   List<Meal> _allMeals = [];
-  List<Meal> _displayedMeals = [];
-  int _mealsPerPage = 10;
+  final List<Meal> _displayedMeals = [];
+  final int _mealsPerPage = 10;
   int _currentPage = 0;
   bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
@@ -80,29 +81,11 @@ class _MealsScreenState extends State<MealsScreen> with SingleTickerProviderStat
 
   Future<void> _addMealToDashboard(Meal meal) async {
     try {
-      final dataSaver = DataSaver();
-      final selectedDate = DateTime.now();
-      final formattedDate =
-          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
-
-      final dailyData = await dataSaver.readDailyData(formattedDate) ??
-          {
-            'date': formattedDate,
-            'waterGlasses': 0,
-            'burnedActivities': <String, double>{},
-            'mealCalories': <String, double>{},
-          };
-
-      final mealCalories = (dailyData['mealCalories'] as Map).cast<String, double>();
-
-      mealCalories[meal.title] = meal.calories.toDouble();
-      dailyData['mealCalories'] = mealCalories;
-
-      await dataSaver.saveDailyData(formattedDate, dailyData);
+      await _dashboardService.addMealToDashboard(meal);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${meal.title} added to today\'s meals'),
+          content: Text('${meal.title} added/updated in today\'s meals'),
         ),
       );
     } catch (e) {
